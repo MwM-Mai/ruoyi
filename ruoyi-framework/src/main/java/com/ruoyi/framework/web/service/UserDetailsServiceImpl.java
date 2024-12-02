@@ -1,5 +1,7 @@
 package com.ruoyi.framework.web.service;
 
+import com.ruoyi.common.core.domain.entity.WxUser;
+import com.ruoyi.system.service.WxLoginService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,46 +23,58 @@ import com.ruoyi.system.service.ISysUserService;
  * @author ruoyi
  */
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService
-{
-    private static final Logger log = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
+public class UserDetailsServiceImpl implements UserDetailsService {
+  private static final Logger log = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
 
-    @Autowired
-    private ISysUserService userService;
-    
-    @Autowired
-    private SysPasswordService passwordService;
+  @Autowired
+  private ISysUserService userService;
 
-    @Autowired
-    private SysPermissionService permissionService;
+  @Autowired
+  private WxLoginService wxLoginService;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
-    {
-        SysUser user = userService.selectUserByUserName(username);
-        if (StringUtils.isNull(user))
-        {
-            log.info("登录用户：{} 不存在.", username);
-            throw new ServiceException(MessageUtils.message("user.not.exists"));
-        }
-        else if (UserStatus.DELETED.getCode().equals(user.getDelFlag()))
-        {
-            log.info("登录用户：{} 已被删除.", username);
-            throw new ServiceException(MessageUtils.message("user.password.delete"));
-        }
-        else if (UserStatus.DISABLE.getCode().equals(user.getStatus()))
-        {
-            log.info("登录用户：{} 已被停用.", username);
-            throw new ServiceException(MessageUtils.message("user.blocked"));
-        }
+  @Autowired
+  private SysPasswordService passwordService;
 
-        passwordService.validate(user);
+  @Autowired
+  private SysPermissionService permissionService;
 
-        return createLoginUser(user);
-    }
+  @Override
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	SysUser user = userService.selectUserByUserName(username);
+	if (StringUtils.isNull(user)) {
+	  log.info("登录用户：{} 不存在.", username);
+	  throw new ServiceException(MessageUtils.message("user.not.exists"));
+	} else if (UserStatus.DELETED.getCode().equals(user.getDelFlag())) {
+	  log.info("登录用户：{} 已被删除.", username);
+	  throw new ServiceException(MessageUtils.message("user.password.delete"));
+	} else if (UserStatus.DISABLE.getCode().equals(user.getStatus())) {
+	  log.info("登录用户：{} 已被停用.", username);
+	  throw new ServiceException(MessageUtils.message("user.blocked"));
+	}
 
-    public UserDetails createLoginUser(SysUser user)
-    {
-        return new LoginUser(user.getUserId(), user.getDeptId(), user, permissionService.getMenuPermission(user));
-    }
+	passwordService.validate(user);
+
+	return createLoginUser(user);
+  }
+
+  public UserDetails createLoginUser(SysUser user) {
+	return new LoginUser(user.getUserId(), user.getDeptId(), user, permissionService.getMenuPermission(user));
+  }
+
+  public LoginUser loadUserByOpenid(String openId, String sessionKey, String phone) {
+	WxUser user = wxLoginService.getWxUserByOpenId(openId);
+	if (StringUtils.isNull(user)) {
+	  log.info("登录用户：{} 不存在.", openId);
+	  user = new WxUser();
+	  user.setOpenId(openId);
+	  user.setSessionKey(sessionKey);
+	  user.setPhoneNumber(phone);
+	  wxLoginService.insertWxUser(user);
+	}
+
+	LoginUser loginUser = new LoginUser();
+	loginUser.setWxUser(user);
+
+	return loginUser;
+  }
 }

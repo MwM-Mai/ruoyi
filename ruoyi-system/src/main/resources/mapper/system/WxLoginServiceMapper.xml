@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ruoyi.system.mapper.WxLoginServiceMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into wx_user (
+        <if test="openId != null and openId != ''">open_id,</if>
+        <if test="sessionKey != null and sessionKey != ''">session_key,</if>
+        <if test="gender != null and gender != ''">gender,</if>
+        <if test="avatarUrl != null and avatarUrl != ''">avatar_url,</if>
+        <if test="city != null and city != ''">city,</if>
+        <if test="province != null and province != ''">province,</if>
+        <if test="country != null and country != ''">country,</if>
+        <if test="language != null and language != ''">language,</if>
+        <if test="phoneNumber != null and phoneNumber != ''">phone_number,</if>
+        <if test="idCardNumber != null and idCardNumber != ''">id_card_number,</if>
+        <if test="email != null and email != ''">email,</if>
+        <if test="realName != null and realName != ''">real_name,</if>
+        <if test="nickname != null and nickname != ''">nickname,</if>
+        <if test="region != null and region != ''">region,</if>
+        create_time,
+        update_time
+        ) values (
+        <if test="openId != null and openId != ''">#{openId},</if>
+        <if test="sessionKey != null and sessionKey != ''">#{sessionKey},</if>
+        <if test="gender != null and gender != ''">#{gender},</if>
+        <if test="avatarUrl != null and avatarUrl != ''">#{avatarUrl},</if>
+        <if test="city != null and city != ''">#{city},</if>
+        <if test="province != null and province != ''">#{province},</if>
+        <if test="country != null and country != ''">#{country},</if>
+        <if test="language != null and language != ''">#{language},</if>
+        <if test="phoneNumber != null and phoneNumber != ''">#{phoneNumber},</if>
+        <if test="idCardNumber != null and idCardNumber != ''">#{idCardNumber},</if>
+        <if test="email != null and email != ''">#{email},</if>
+        <if test="realName != null and realName != ''">#{realName},</if>
+        <if test="nickname != null and nickname != ''">#{nickname},</if>
+        <if test="region != null and region != ''">#{region},</if>
+        sysdate(),
+        sysdate()
+        )
+    </insert>
+</mapper>

@@ -2,6 +2,7 @@ package com.ruoyi.common.core.domain.model;
 
 import com.alibaba.fastjson2.annotation.JSONField;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.entity.WxUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
@@ -71,6 +72,11 @@ public class LoginUser implements UserDetails
      */
     private SysUser user;
 
+    /**
+     * 微信用户信息
+     */
+    private WxUser wxUser;
+
     public LoginUser()
     {
     }
@@ -87,6 +93,16 @@ public class LoginUser implements UserDetails
         this.deptId = deptId;
         this.user = user;
         this.permissions = permissions;
+    }
+
+    /**
+     * 微信用户登录
+     * @param userId
+     * @param user
+     */
+    public LoginUser(Long userId, WxUser user) {
+        this.userId = userId;
+        this.wxUser = user;
     }
 
     public Long getUserId()
@@ -123,13 +139,15 @@ public class LoginUser implements UserDetails
     @Override
     public String getPassword()
     {
-        return user.getPassword();
+        // 是否是微信用户
+        return user != null ? user.getPassword() : wxUser.getSessionKey();
     }
 
     @Override
     public String getUsername()
     {
-        return user.getUserName();
+        // 是否是微信用户
+        return user != null ? user.getPassword() : wxUser.getOpenId();
     }
 
     /**
@@ -256,6 +274,16 @@ public class LoginUser implements UserDetails
     public void setUser(SysUser user)
     {
         this.user = user;
+    }
+
+    public WxUser getWxUser()
+    {
+        return wxUser;
+    }
+
+    public void setWxUser(WxUser wxUser)
+    {
+        this.wxUser = wxUser;
     }
 
     @Override

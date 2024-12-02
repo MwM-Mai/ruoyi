@@ -1,11 +1,15 @@
 package com.ruoyi.framework.web.service;
 
 import javax.annotation.Resource;
+
+import com.ruoyi.common.core.domain.entity.WxUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
@@ -51,6 +55,9 @@ public class SysLoginService
 
     @Autowired
     private ISysConfigService configService;
+
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
 
     /**
      * 登录验证
@@ -99,6 +106,29 @@ public class SysLoginService
         // 生成token
         return tokenService.createToken(loginUser);
     }
+
+    /**
+     * 自定义微信登录验证
+     *
+     * @param openId 微信唯一标识
+     * @param sessionKey 微信会话密钥
+     * @param phone 手机号
+     * @return 结果
+     */
+    public String wxLogin(String openId, String sessionKey, String phone)
+    {
+        // 根据 openId 加载用户详细信息
+        LoginUser loginUser = userDetailsService.loadUserByOpenid(openId, sessionKey, phone);
+
+        // 创建认证令牌
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(openId, sessionKey);
+        authenticationToken.setDetails(loginUser);
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        // 生成token
+        return tokenService.createToken(loginUser);
+    }
+
 
     /**
      * 校验验证码
