@@ -63,10 +63,10 @@ spring:
 wx:
   miniapp:
     configs:
-      - appid: wx8b1536c1a09bc8bf #微信小程序的appid
-        secret: 10c32d97f30d0f3ece7ee90e8d846853 #微信小程序的Secret
-        mchId: 1699816347 #商户id
-        apiV3Key: 0123456789SCWscwSCWscwSCWscwSCW0 #V3密钥
+      - appid:  #微信小程序的appid
+        secret:  #微信小程序的Secret
+        mchId:  #商户id
+        apiV3Key:  #V3密钥
         privateKeyPath: classpath:key/apiclient_key.pem #apiclient_key.pem证书文件的绝对路径或者以classpath:开头的类路径
         privateCertPath: classpath:key/apiclient_cert.pem
         keyPath: classpath:key/apiclient_cert.p12
